@@ -26,7 +26,17 @@ def denied(fn, label, code=None):
         return
     raise AssertionError(label+' was unexpectedly allowed')
 
-before=api('fx_rates?select=rate_date,currency,unit,base_rate,round_no,announced_at,verification_status&order=rate_date,currency')
+def all_rates():
+    rows=[]
+    offset=0
+    while True:
+        page=api('fx_rates?select=rate_date,currency,unit,base_rate,round_no,announced_at,verification_status&order=rate_date,currency&limit=1000&offset='+str(offset))
+        rows.extend(page)
+        if len(page)<1000:
+            return rows
+        offset+=1000
+
+before=all_rates()
 assert before and len(before)%4==0
 assert all(r['verification_status']=='verified' and r['round_no']==1 and r['unit']==(100 if r['currency']=='JPY' else 1) for r in before)
 print('PASS anonymous verified SELECT: '+str(len(before))+' rates')
@@ -47,7 +57,7 @@ print('PASS authorized replay: unchanged, zero duplicated rows')
 changed=copy.deepcopy(rows);changed[0]['base_rate']=str(Decimal(changed[0]['base_rate'])+Decimal('.01'))
 denied(lambda:c.rpc(token,target,changed,digest),'collector overwriting an existing rate','P0001')
 denied(lambda:c.rpc(token,target,rows[:-1],digest),'incomplete currency bundle','P0001')
-after=api('fx_rates?select=rate_date,currency,unit,base_rate,round_no,announced_at,verification_status&order=rate_date,currency')
+after=all_rates()
 assert before==after
 print('PASS all live rate rows unchanged by security checks')
 evidence=Path('evidence/live-verification.json')

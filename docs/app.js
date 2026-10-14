@@ -2,7 +2,7 @@ import {DB_URL,PUBLIC_KEY} from './config.js';
 import {groupRates} from './rates.js';
 const specs=[['USD','미국 달러','원 / 1달러','#005baa'],['JPY','일본 엔','원 / 100엔','#518932'],['EUR','유로','원 / 1유로','#7354ac'],['CNY','중국 위안','원 / 1위안','#bf7a17'],['USDJPY','USD/JPY 환산','엔 / 1달러','#137f8b']];
 const $=id=>document.getElementById(id),fmt=n=>new Intl.NumberFormat('ko-KR',{minimumFractionDigits:2,maximumFractionDigits:2}).format(n);
-let data=[],filtered=[],shown=30,preset=30;
+let data=[],filtered=[],shown=30,preset=365;
 const today=()=>new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Seoul',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
 function isoAgo(end,days){const d=new Date(end+'T00:00:00Z');d.setUTCDate(d.getUTCDate()-days);return d.toISOString().slice(0,10)}
 function svgChart(points,key,name,color){
