@@ -10,3 +10,16 @@ export function groupRates(rows){
  }
  return [...groups.values()].filter(g=>!g.invalid&&['USD','JPY','EUR','CNY'].every(c=>Number.isFinite(g[c]))).map(g=>({...g,USDJPY:g.USD/g.JPY*100})).sort((a,b)=>a.date.localeCompare(b.date));
 }
+
+export function rateChange(value,base){
+ if(!Number.isFinite(value)||!Number.isFinite(base)||base<=0)return null;
+ return {amount:value-base,percent:(value/base-1)*100};
+}
+
+export function pointMetrics(all,points,key,index){
+ const point=points[index];
+ if(!point)return null;
+ const fullIndex=all.findIndex(row=>row.date===point.date);
+ const previous=fullIndex>0?all[fullIndex-1]:null;
+ return {point,first:points[0],previous,daily:rateChange(point[key],previous?.[key]),period:rateChange(point[key],points[0]?.[key])};
+}

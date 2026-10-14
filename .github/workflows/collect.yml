@@ -26,6 +26,7 @@ jobs:
         run: |
           python3 -m unittest discover -s tests -v
           node tests/test_rates.mjs
+          node tests/test_chart.mjs
       - name: Collect public first-announcement web form
         env:
           FX_COLLECTOR_TOKEN: ${{ secrets.FX_COLLECTOR_TOKEN }}
