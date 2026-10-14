@@ -1,0 +1,39 @@
+{
+  "source_url": "https://www.busanbank.co.kr/ib20/mnu/CMNCMN006001000",
+  "rate_date": "2026-10-14",
+  "round_no": 1,
+  "rates": [
+    {
+      "rate_date": "2026-10-14",
+      "currency": "USD",
+      "unit": 1,
+      "base_rate": "1340.50",
+      "round_no": 1,
+      "announced_at": "2026-10-14T08:29:20+09:00"
+    },
+    {
+      "rate_date": "2026-10-14",
+      "currency": "JPY",
+      "unit": 100,
+      "base_rate": "846.57",
+      "round_no": 1,
+      "announced_at": "2026-10-14T08:29:20+09:00"
+    },
+    {
+      "rate_date": "2026-10-14",
+      "currency": "EUR",
+      "unit": 1,
+      "base_rate": "1500.96",
+      "round_no": 1,
+      "announced_at": "2026-10-14T08:29:20+09:00"
+    },
+    {
+      "rate_date": "2026-10-14",
+      "currency": "CNY",
+      "unit": 1,
+      "base_rate": "200.23",
+      "round_no": 1,
+      "announced_at": "2026-10-14T08:29:20+09:00"
+    }
+  ]
+}
