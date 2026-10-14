@@ -1,0 +1,33 @@
+name: Collect BNK first rates
+on:
+  schedule:
+    - cron: '17 0,1,7 * * 1-5'
+  workflow_dispatch:
+    inputs:
+      days:
+        description: 'Calendar days to collect (1-366)'
+        required: false
+        default: '7'
+permissions:
+  contents: read
+concurrency:
+  group: bnk-collection
+  cancel-in-progress: false
+jobs:
+  collect:
+    if: github.repository_owner == 'malongwan-web' && github.event.repository.private == false
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Validate collector
+        run: |
+          python3 -m unittest discover -s tests -v
+          node tests/test_rates.mjs
+      - name: Collect public first-announcement web form
+        env:
+          FX_COLLECTOR_TOKEN: ${{ secrets.FX_COLLECTOR_TOKEN }}
+          DAYS: ${{ inputs.days || '7' }}
+        run: python3 scripts/collect.py --days "$DAYS"
