@@ -13,6 +13,7 @@ for(const points of [all,all.slice(0,1),[{date:'2026-10-01',USD:100},{date:'2026
 const many=Array.from({length:245},(_,i)=>({date:new Date(Date.UTC(2025,9,15+i)).toISOString().slice(0,10),USD:1300+i/10}));
 const spread=chartSVG(many,'USD','달러','#005baa',{spread:true,labels:true});assert.equal(spread.labelCount,245);assert.equal((spread.html.match(/class="value-label"/g)||[]).length,245);
 const fit=chartSVG(many,'USD','달러','#005baa',{width:1100,labels:true});assert.ok(fit.labelCount<245);assert.equal((fit.html.match(/class="chart-point"/g)||[]).length,245);
+const printChart=chartSVG(many.slice(0,23),'USD','달러','#005baa',{width:1400,height:250,labels:true,print:true,interactive:false});assert.equal(printChart.labelCount,23);assert.equal((printChart.html.match(/class="date-label"/g)||[]).length,23);assert.ok(!printChart.html.includes('data-point-index'));
 const domain=chartDomain([0,0],true);assert.ok(domain.max>domain.min&&domain.step>0);
 const raw=['USD','JPY','EUR','CNY'].map((currency,i)=>({rate_date:'2026-10-14',currency,unit:currency==='JPY'?100:1,base_rate:[1340.5,846.57,1500.96,200.23][i],round_no:1,verification_status:'verified'}));
 const cross=groupRates(raw);assert.equal(cross[0].USDJPY.toFixed(2),'158.34');assert.equal(pointMetrics(cross,cross,'USDJPY',0).period.percent,0);

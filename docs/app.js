@@ -6,6 +6,13 @@ const $=id=>document.getElementById(id);
 let data=[],filtered=[],shown=30,preset=365,view='summary',layout='fit',showValues=true;
 let zoomKey='USD',zoomPeriod='selection',zoomMetric='rate',zoomLayout='fit',zoomValues=true,zoomPoints=[];
 let scrollSync=false,resizeTimer;
+function renderPrint(){
+ const end=$('print-to').value||$('to').value||data.at(-1)?.date||today();$('print-to').value=end;
+ const d=new Date(end+'T00:00:00Z'),day=d.getUTCDate();d.setUTCDate(1);d.setUTCMonth(d.getUTCMonth()-1);const last=new Date(Date.UTC(d.getUTCFullYear(),d.getUTCMonth()+1,0)).getUTCDate();d.setUTCDate(Math.min(day,last));d.setUTCDate(d.getUTCDate()+1);
+ const start=d.toISOString().slice(0,10),points=data.filter(r=>r.date>=start&&r.date<=end);
+ $('print-now').disabled=!points.length;
+ $('print-sheet').innerHTML=`<div class="print-heading"><h2>환율 Trend</h2><div>MH머트리얼즈㈜<br>${start} ~ ${end} · ${points.length}개 고시일</div></div>${specs.map(([key,name,,color])=>`<section class="print-chart"><h3>${codeLabel(key)} (${name})</h3>${chartSVG(points,key,name,color,{width:1400,height:250,labels:true,interactive:false,all:data,print:true}).html}</section>`).join('')}<table class="print-rates"><thead><tr><th>일자</th>${points.map(r=>`<th>${r.date.slice(5)}</th>`).join('')}</tr></thead><tbody>${specs.map(([key])=>`<tr><th>${codeLabel(key)}</th>${points.map(r=>`<td>${fmt(r[key])}</td>`).join('')}</tr>`).join('')}</tbody></table><p class="print-source">자료: BNK부산은행 최초 고시 1회차 매매기준율 · JPY는 100엔 기준 · USD/JPY = USD ÷ JPY(100) × 100<br>휴일·미고시일 제외. ${points.length?'조회 구간의 모든 고시값을 표시합니다.':'선택한 한 달에 검증된 자료가 없습니다.'}</p>`;
+}
 const today=()=>new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Seoul',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
 function isoAgo(end,days){const d=new Date(end+'T00:00:00Z');d.setUTCDate(d.getUTCDate()-days);return d.toISOString().slice(0,10)}
 const codeLabel=key=>key==='JPY'?'JPY(100)':key==='USDJPY'?'USD/JPY':key;
@@ -28,6 +35,7 @@ function render(){
  if(from&&to&&from>to){$('status').textContent='시작일은 종료일보다 이전이어야 합니다.';$('status').className='error';return}
  filtered=data.filter(r=>(!from||r.date>=from)&&(!to||r.date<=to));shown=30;
  $('main-content').dataset.view=view;$('detail-controls').hidden=view!=='detail';
+ $('print-view').hidden=view!=='print';if(view==='print')renderPrint();
  document.querySelectorAll('button[data-view]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.view===view)));
  $('view-description').textContent=view==='summary'?'주요 통화의 환율과 변동률을 한눈에 확인합니다.':'차트를 한 줄씩 넓게 표시합니다. 일자별 숫자는 가로로 펼쳐 확인할 수 있습니다.';
  renderCharts();renderTable();$('download').disabled=!filtered.length;$('status').textContent=statusText();
@@ -98,7 +106,9 @@ async function load(){
  finally{$('refresh').disabled=false}
 }
 document.querySelectorAll('[data-days]').forEach(b=>b.addEventListener('click',()=>setPeriod(b.dataset.days)));
-document.querySelectorAll('button[data-view]').forEach(b=>b.addEventListener('click',()=>{view=b.dataset.view;render()}));
+document.querySelectorAll('button[data-view]').forEach(b=>b.addEventListener('click',()=>{view=b.dataset.view;if(view==='print')$('print-to').value=$('to').value;render()}));
+$('print-refresh').addEventListener('click',renderPrint);$('print-now').addEventListener('click',()=>window.print());
+window.addEventListener('beforeprint',renderPrint);
 document.querySelectorAll('[data-layout]').forEach(b=>b.addEventListener('click',()=>{layout=b.dataset.layout;renderCharts();renderTable()}));
 $('show-values').addEventListener('change',e=>{showValues=e.target.checked;renderCharts(true)});$('timeline').addEventListener('input',e=>setMainScroll(Number(e.target.value)/100));
 $('apply').addEventListener('click',()=>{document.querySelectorAll('[data-days]').forEach(b=>b.setAttribute('aria-pressed','false'));render()});$('refresh').addEventListener('click',load);$('more').addEventListener('click',()=>{shown+=30;renderTable()});

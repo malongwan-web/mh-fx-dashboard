@@ -1,0 +1,17 @@
+main[data-view=print]>:not(.view-bar):not(#print-view){display:none!important}
+main[data-view=print] #view-description{display:none}
+.print-tools{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:18px 0}.print-tools label{font-size:13px}.print-tools p{width:100%;font-size:12px;color:#61758b;margin:0}.print-preview{overflow:auto;background:#dce3eb;padding:20px}
+#print-sheet{box-sizing:border-box;width:194mm;height:277mm;background:white;color:#16324d;margin:auto;padding:4mm;overflow:hidden;font-family:'Malgun Gothic',sans-serif}
+.print-heading{height:13mm;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #778697}.print-heading h2{font-size:18px;margin:0;color:#253996}.print-heading div{text-align:right;font-size:9px;line-height:1.6}
+.print-chart{height:43mm;border-bottom:1px solid #a1acb8;break-inside:avoid}.print-chart h3{text-align:center;font-size:12px;margin:0;padding-top:2mm;height:6mm;box-sizing:border-box;color:#000}.print-chart .trend-svg{display:block;width:100%;height:36mm}.print-chart .trend-svg text{font-size:16px}.print-chart .trend-svg .date-label{font-size:15px}.print-chart .trend-svg .value-label{font-size:14px;fill:#16324d}.print-chart .trend-svg .grid{stroke:#cbd3db}
+.print-rates{width:100%;min-width:0;table-layout:fixed;border-collapse:collapse;margin-top:2mm;font-variant-numeric:tabular-nums}.print-rates th,.print-rates td{font-size:6px;line-height:1.25;padding:3px 0!important;text-align:center!important;white-space:nowrap;border:1px solid #8799ac;overflow:hidden}.print-rates th:first-child{width:43px}.print-rates th{background:#e5edf6;color:#16324d}.print-source{font-size:7px;line-height:1.6;margin:2mm 0 0}
+@page{size:A4 portrait;margin:10mm 8mm}
+@media print{
+ html,body{margin:0!important;padding:0!important;background:white!important;min-width:0!important}
+ body>header,body>footer,body>dialog,main>:not(#print-view),.print-tools{display:none!important}
+ main{display:block!important;width:194mm!important;max-width:none!important;margin:0!important;padding:0!important}
+ #print-view{display:block!important;margin:0!important;padding:0!important}
+ .print-preview{display:block;overflow:visible;background:white;padding:0!important;margin:0!important}
+ #print-sheet{display:block!important;width:194mm;height:277mm;padding:4mm;margin:0;break-inside:avoid;print-color-adjust:exact;-webkit-print-color-adjust:exact}
+}
+
