@@ -6,11 +6,13 @@ import json
 import os
 from pathlib import Path
 import re
+import ssl
 import sys
 import time
 from datetime import date, datetime, timedelta
 from decimal import Decimal
 from urllib.parse import urlencode
+from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
 from zoneinfo import ZoneInfo
 
@@ -61,10 +63,21 @@ def fetch_rates(target):
                           inqCrdt=target.strftime('%Y%m%d'), ntfcTmrd='1')).encode()
     request = Request(FORM, data=body, headers={'User-Agent':'MH-FX-Collector/1.0', 'Referer':SOURCE,
                                               'Content-Type':'application/x-www-form-urlencoded'})
-    with urlopen(request, timeout=40) as response:
-        if response.status != 200:
-            raise ValueError('Bank HTTP error')
-        raw = response.read()
+    for attempt in range(3):
+        try:
+            # Fresh context for each attempt; keep certificate/hostname checks on.
+            with urlopen(request, timeout=40, context=ssl.create_default_context()) as response:
+                if response.status != 200:
+                    raise ValueError('Bank HTTP error')
+                raw = response.read()
+            break
+        except (URLError, TimeoutError):
+            error = sys.exc_info()[1]
+            if isinstance(error, HTTPError) and error.code != 429 and error.code < 500:
+                raise
+            if attempt == 2:
+                raise
+            time.sleep(2 ** attempt)
     page = raw.decode('utf-8')
     return parse_page(page, target), hashlib.sha256(raw).hexdigest()
 

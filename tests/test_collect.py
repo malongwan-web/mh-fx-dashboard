@@ -4,6 +4,9 @@ import json
 from datetime import date
 from pathlib import Path
 import unittest
+from unittest.mock import MagicMock, patch
+from urllib.error import HTTPError, URLError
+import ssl
 
 spec=importlib.util.spec_from_file_location('collect',Path(__file__).parents[1]/'scripts/collect.py')
 c=importlib.util.module_from_spec(spec);spec.loader.exec_module(c)
@@ -32,5 +35,17 @@ class CollectorTest(unittest.TestCase):
     def test_explicit_holiday_only(self):
         with self.assertRaises(c.NoRate):c.parse_page(json.dumps({'_msg_':{'_common_':{'error.addition.code':'BAFEB06531'}}}),date(2026,10,9))
         with self.assertRaises(ValueError):c.parse_page(json.dumps({'_msg_':{'_common_':{'error.addition.code':'OTHER'}}}),date(2026,10,9))
+    def test_transient_connection_retry_keeps_tls_verification(self):
+        response=MagicMock();response.__enter__.return_value=response;response.status=200;response.read.return_value=fixture(self.rows).encode()
+        with patch.object(c,'urlopen',side_effect=[URLError('transient TLS error'),response]) as open_mock, patch.object(c.time,'sleep'):
+            rows,_=c.fetch_rates(date(2026,10,14))
+            self.assertEqual(len(rows),4);self.assertEqual(open_mock.call_count,2)
+            for call in open_mock.call_args_list:
+                self.assertEqual(call.kwargs['context'].verify_mode,ssl.CERT_REQUIRED)
+                self.assertTrue(call.kwargs['context'].check_hostname)
+    def test_not_found_is_not_retried(self):
+        with patch.object(c,'urlopen',side_effect=HTTPError(c.FORM,404,'Not Found',{},None)) as open_mock, patch.object(c.time,'sleep'):
+            with self.assertRaises(HTTPError):c.fetch_rates(date(2026,10,14))
+            self.assertEqual(open_mock.call_count,1)
 
 if __name__=='__main__':unittest.main()
