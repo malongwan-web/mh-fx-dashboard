@@ -9,7 +9,7 @@ on:
         required: false
         default: '7'
 permissions:
-  contents: read
+  contents: write
 concurrency:
   group: bnk-collection
   cancel-in-progress: false
@@ -30,9 +30,13 @@ jobs:
         env:
           FX_COLLECTOR_TOKEN: ${{ secrets.FX_COLLECTOR_TOKEN }}
           DAYS: ${{ inputs.days || '7' }}
-        run: python3 scripts/collect.py --days "$DAYS"
+        run: python3 scripts/collect.py --days "$DAYS" --evidence-dir evidence/run
       - name: Verify live read-only boundary and source match
         if: github.event_name == 'workflow_dispatch'
         env:
           FX_COLLECTOR_TOKEN: ${{ secrets.FX_COLLECTOR_TOKEN }}
         run: python3 scripts/verify_live.py
+      - name: Record latest public rate receipt
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python3 scripts/publish_summary.py
