@@ -1,6 +1,10 @@
 name: Collect BNK first rates
 on:
   schedule:
+    # KST Mon-Fri 08:30-08:55 (UTC previous day Sun-Thu).
+    - cron: '30,35,40,45,50,55 23 * * 0-4'
+    # KST Mon-Fri 09:00.
+    - cron: '0 0 * * 1-5'
     - cron: '17 0,1,7 * * 1-5'
   workflow_dispatch:
     inputs:
@@ -30,7 +34,7 @@ jobs:
       - name: Collect public first-announcement web form
         env:
           FX_COLLECTOR_TOKEN: ${{ secrets.FX_COLLECTOR_TOKEN }}
-          DAYS: ${{ inputs.days || '7' }}
+          DAYS: ${{ inputs.days || (github.event.schedule == '17 0,1,7 * * 1-5' && '7' || '1') }}
         run: python3 scripts/collect.py --days "$DAYS" --evidence-dir evidence/run
       - name: Verify live read-only boundary and source match
         if: github.event_name == 'workflow_dispatch'
