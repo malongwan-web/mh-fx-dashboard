@@ -1,39 +1,39 @@
 {
   "source_url": "https://www.busanbank.co.kr/ib20/mnu/CMNCMN006001000",
-  "rate_date": "2026-11-05",
+  "rate_date": "2026-11-06",
   "round_no": 1,
   "rates": [
     {
-      "rate_date": "2026-11-05",
+      "rate_date": "2026-11-06",
       "currency": "USD",
       "unit": 1,
-      "base_rate": "1340.70",
+      "base_rate": "1342.00",
       "round_no": 1,
-      "announced_at": "2026-11-05T08:16:45+09:00"
+      "announced_at": "2026-11-06T08:38:16+09:00"
     },
     {
-      "rate_date": "2026-11-05",
+      "rate_date": "2026-11-06",
       "currency": "JPY",
       "unit": 100,
-      "base_rate": "846.35",
+      "base_rate": "852.31",
       "round_no": 1,
-      "announced_at": "2026-11-05T08:16:45+09:00"
+      "announced_at": "2026-11-06T08:38:16+09:00"
     },
     {
-      "rate_date": "2026-11-05",
+      "rate_date": "2026-11-06",
       "currency": "EUR",
       "unit": 1,
-      "base_rate": "1506.14",
+      "base_rate": "1505.86",
       "round_no": 1,
-      "announced_at": "2026-11-05T08:16:45+09:00"
+      "announced_at": "2026-11-06T08:38:16+09:00"
     },
     {
-      "rate_date": "2026-11-05",
+      "rate_date": "2026-11-06",
       "currency": "CNY",
       "unit": 1,
-      "base_rate": "200.52",
+      "base_rate": "201.34",
       "round_no": 1,
-      "announced_at": "2026-11-05T08:16:45+09:00"
+      "announced_at": "2026-11-06T08:38:16+09:00"
     }
   ]
 }
